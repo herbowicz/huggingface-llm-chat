@@ -67,11 +67,27 @@ A beautiful web interface for interacting with Large Language Models via Hugging
 
 ## 🎛️ Parameters
 
-- **Temperature** (0-2): Controls randomness in responses
-- **Max Tokens** (1-2048): Maximum length of response
-- **Top P** (0-1): Nucleus sampling parameter
-- **Frequency Penalty** (-2 to 2): Reduces repetition
-- **Presence Penalty** (-2 to 2): Encourages topic diversity
+- **Temperature** (0-2): Controls randomness in responses  
+  <sub>*Lower values (0.1-0.3) make responses more focused and predictable, higher values (0.7-1.0) make them more creative and varied*</sub>
+
+- **Max Tokens** (1-2048): Maximum length of response  
+  <sub>*Tokens are pieces of words - roughly 1 token ≈ 0.75 words, so 100 tokens ≈ 75 words*</sub>
+
+- **Top P** (0-1): Nucleus sampling parameter  
+  <sub>*Controls diversity by considering only the most likely words that make up the top P% probability mass*</sub>
+
+- **Frequency Penalty** (-2 to 2): Reduces repetition  
+  <sub>*Positive values discourage the model from repeating the same words/phrases it already used*</sub>
+
+- **Presence Penalty** (-2 to 2): Encourages topic diversity  
+  <sub>*Positive values encourage the model to talk about new topics rather than staying on the same subject*</sub>
+
+### 💡 Recommended Settings for Beginners
+
+- **General questions**: Temperature: 0.7, Max Tokens: 150, Top P: 0.9, Penalties: 0.0
+- **Creative writing**: Temperature: 0.9, Max Tokens: 300, Top P: 0.9, Penalties: 0.0  
+- **Factual answers**: Temperature: 0.3, Max Tokens: 100, Top P: 0.9, Penalties: 0.0
+- **Detailed explanations**: Temperature: 0.5, Max Tokens: 500, Top P: 0.9, Penalties: 0.0
 
 ## 🔧 Configuration
 
