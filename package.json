@@ -1,0 +1,16 @@
+{
+  "name": "huggingface",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "test-llm.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "herbowicz",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "openai": "^5.11.0"
+  }
+}
