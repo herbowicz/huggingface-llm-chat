@@ -76,10 +76,10 @@ A beautiful web interface for interacting with Large Language Models via Hugging
 - **Top P** (0-1): Nucleus sampling parameter  
   <sub>*Controls diversity by considering only the most likely words that make up the top P% probability mass*</sub>
 
-- **Frequency Penalty** (-2 to 2): Reduces repetition  
+- **Frequency Penalty** (-1 to 1): Reduces repetition  
   <sub>*Positive values discourage the model from repeating the same words/phrases it already used*</sub>
 
-- **Presence Penalty** (-2 to 2): Encourages topic diversity  
+- **Presence Penalty** (-1 to 1): Encourages topic diversity  
   <sub>*Positive values encourage the model to talk about new topics rather than staying on the same subject*</sub>
 
 ### 💡 Recommended Settings for Beginners
