@@ -30,8 +30,8 @@ A beautiful web interface for interacting with Large Language Models via Hugging
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repo-url>
-   cd huggingface
+   git clone https://github.com/herbowicz/huggingface-llm-chat.git
+   cd huggingface-llm-chat
    ```
 
 2. **Install dependencies**
