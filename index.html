@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Chat Interface</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .params-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .param-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .param-group label {
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .param-group input {
+            padding: 8px;
+            font-size: 12px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .response-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .response-section.show {
+            display: block;
+        }
+
+        .metadata {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 12px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .response-text {
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #667eea;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 LLM Chat Interface</h1>
+        
+        <form id="chatForm">
+            <div class="form-group">
+                <label for="question">Your Question:</label>
+                <textarea id="question" placeholder="Enter your question here..." required>Where is Cairo?</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="model">Model:</label>
+                <select id="model" required>
+                    <option value="Qwen/Qwen2.5-1.5B-Instruct:featherless-ai">Qwen 2.5 1.5B Instruct</option>
+                    <option value="meta-llama/Meta-Llama-3-8B-Instruct">Llama 3 8B Instruct</option>
+                    <option value="microsoft/DialoGPT-medium">DialoGPT Medium</option>
+                    <option value="mistralai/Mistral-7B-Instruct-v0.1">Mistral 7B Instruct</option>
+                    <option value="HuggingFaceH4/zephyr-7b-beta">Zephyr 7B Beta</option>
+                </select>
+            </div>
+
+            <div class="params-grid">
+                <div class="param-group">
+                    <label for="temperature">Temperature (0-2):</label>
+                    <input type="number" id="temperature" min="0" max="2" step="0.1" value="0.7">
+                </div>
+                <div class="param-group">
+                    <label for="max_tokens">Max Tokens:</label>
+                    <input type="number" id="max_tokens" min="1" max="2048" value="150">
+                </div>
+                <div class="param-group">
+                    <label for="top_p">Top P (0-1):</label>
+                    <input type="number" id="top_p" min="0" max="1" step="0.05" value="0.9">
+                </div>
+                <div class="param-group">
+                    <label for="frequency_penalty">Frequency Penalty (-2 to 2):</label>
+                    <input type="number" id="frequency_penalty" min="-2" max="2" step="0.1" value="0.0">
+                </div>
+                <div class="param-group">
+                    <label for="presence_penalty">Presence Penalty (-2 to 2):</label>
+                    <input type="number" id="presence_penalty" min="-2" max="2" step="0.1" value="0.0">
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 30px;">
+                <button type="submit" id="submitBtn">🚀 Ask Question</button>
+            </div>
+        </form>
+
+        <div id="responseSection" class="response-section">
+            <div id="loading" class="loading" style="display: none;">
+                Processing your request...
+            </div>
+            <div id="error" class="error" style="display: none;"></div>
+            <div id="metadata" class="metadata" style="display: none;"></div>
+            <div id="response" class="response-text" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('chatForm');
+        const responseSection = document.getElementById('responseSection');
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const metadata = document.getElementById('metadata');
+        const response = document.getElementById('response');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Show response section and loading
+            responseSection.classList.add('show');
+            loading.style.display = 'block';
+            error.style.display = 'none';
+            metadata.style.display = 'none';
+            response.style.display = 'none';
+            submitBtn.disabled = true;
+            
+            // Get form data
+            const formData = {
+                question: document.getElementById('question').value,
+                model: document.getElementById('model').value,
+                temperature: parseFloat(document.getElementById('temperature').value),
+                max_tokens: parseInt(document.getElementById('max_tokens').value),
+                top_p: parseFloat(document.getElementById('top_p').value),
+                frequency_penalty: parseFloat(document.getElementById('frequency_penalty').value),
+                presence_penalty: parseFloat(document.getElementById('presence_penalty').value)
+            };
+            
+            try {
+                // Make API call to your backend
+                const apiResponse = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await apiResponse.json();
+                
+                if (!apiResponse.ok) {
+                    throw new Error(result.error || 'API request failed');
+                }
+                
+                // Hide loading
+                loading.style.display = 'none';
+                
+                // Show metadata
+                metadata.style.display = 'block';
+                metadata.innerHTML = `
+                    <strong>📊 Response Metadata:</strong><br>
+                    Model: ${result.model}<br>
+                    Created: ${new Date(result.created * 1000).toLocaleString()}<br>
+                    Tokens Used: ${JSON.stringify(result.usage)}<br>
+                    Finish Reason: ${result.finish_reason}
+                `;
+                
+                // Show response
+                response.style.display = 'block';
+                response.innerHTML = `<strong>🤖 Assistant:</strong><br><br>${result.content}`;
+                
+            } catch (err) {
+                loading.style.display = 'none';
+                error.style.display = 'block';
+                error.innerHTML = `<strong>❌ Error:</strong> ${err.message}`;
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
